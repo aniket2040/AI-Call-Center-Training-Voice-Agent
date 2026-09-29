@@ -556,22 +556,22 @@ backend/app/schemas/
 
 Implement:
 
-- [ ] User schemas.
-- [ ] Scenario schemas.
-- [ ] Training session schemas.
-- [ ] Call request schemas.
-- [ ] Call response schemas.
-- [ ] Session event schemas.
-- [ ] Evaluation schemas.
+- [X] User schemas.
+- [X] Scenario schemas.
+- [X] Training session schemas.
+- [X] Call request schemas.
+- [X] Call response schemas.
+- [X] Session event schemas.
+- [X] Evaluation schemas.
 
 ## Rules
 
-- [ ] Validate phone numbers.
-- [ ] Validate scenario IDs.
-- [ ] Validate supported difficulty levels.
-- [ ] Validate status values.
-- [ ] Validate score ranges.
-- [ ] Never expose internal database fields unnecessarily.
+- [X] Validate phone numbers.
+- [X] Validate scenario IDs.
+- [X] Validate supported difficulty levels.
+- [X] Validate status values.
+- [X] Validate score ranges.
+- [X] Never expose internal database fields unnecessarily.
 
 ---
 
@@ -626,21 +626,21 @@ evaluation:
 
 ## Scenario loader
 
-- [ ] Load scenario from database.
-- [ ] Validate scenario configuration.
-- [ ] Convert database configuration into internal scenario object.
-- [ ] Reject invalid scenarios.
-- [ ] Cache scenario configuration where appropriate.
+- [X] Load scenario from database.
+- [X] Validate scenario configuration.
+- [X] Convert database configuration into internal scenario object.
+- [X] Reject invalid scenarios.
+- [X] Cache scenario configuration where appropriate.
 
 ## Scenario service
 
 Implement:
 
-- [ ] `get_scenario()`
-- [ ] `create_scenario()`
-- [ ] `update_scenario()`
-- [ ] `activate_scenario()`
-- [ ] `deactivate_scenario()`
+- [X] `get_scenario()`
+- [X] `create_scenario()`
+- [x] `update_scenario()`
+- [X] `activate_scenario()`
+- [X] `deactivate_scenario()`
 
 ---
 
