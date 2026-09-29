@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-
+from backend.app.db.session import engine
 from backend.app.api.v1.health import router as health_router
 from backend.app.api.v1.readiness import router as readiness_router
 from backend.app.config import settings
@@ -10,7 +10,6 @@ from backend.app.core.middleware import RequestIDMiddleware
 from backend.app.core.logging import (
     configure_logging,
     log_lifecycle_event,
-    get_logger,
 )
 
 
@@ -27,6 +26,8 @@ async def lifespan(app: FastAPI):
     app.state.app_name = settings.app_name
 
     yield
+
+    await engine.dispose()
 
     log_lifecycle_event(
         LifecycleEvent.APPLICATION_SHUTDOWN,

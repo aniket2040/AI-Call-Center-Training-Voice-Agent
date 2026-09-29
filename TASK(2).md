@@ -343,27 +343,27 @@ docker-compose.yml
 
 ## Services
 
-- [ ] PostgreSQL.
-- [ ] Backend API.
+- [X] PostgreSQL.
+- [X] Backend API.
 - [ ] Agent worker if separated.
 - [ ] Local object storage if required for development.
 
 ## Docker
 
-- [ ] Create backend Dockerfile.
-- [ ] Use non-root user.
-- [ ] Configure environment variables.
-- [ ] Configure health check.
-- [ ] Avoid copying secrets into image.
-- [ ] Add `.dockerignore`.
+- [X] Create backend Dockerfile.
+- [X] Use non-root user.
+- [X] Configure environment variables.
+- [X] Configure health check.
+- [X] Avoid copying secrets into image.
+- [X] Add `.dockerignore`.
 
 ## Verify
 
-- [ ] Start complete development stack.
-- [ ] Run database migration.
-- [ ] Start API.
-- [ ] Call health endpoint.
-- [ ] Run tests.
+- [X] Start complete development stack.
+- [X] Run database migration.
+- [X] Start API.
+- [X] Call health endpoint.
+- [X] Run tests.
 
 ---
 
@@ -377,22 +377,22 @@ backend/app/db/
 
 ## SQLAlchemy
 
-- [ ] Create async database engine.
-- [ ] Create session factory.
-- [ ] Create declarative base.
-- [ ] Create dependency for database sessions.
-- [ ] Configure connection pooling.
-- [ ] Configure connection cleanup.
+- [X] Create async database engine.
+- [X] Create session factory.
+- [X] Create declarative base.
+- [X] Create dependency for database sessions.
+- [X] Configure connection pooling.
+- [X] Configure connection cleanup.
 
 ## Alembic
 
-- [ ] Initialize Alembic.
-- [ ] Configure database URL.
-- [ ] Connect Alembic metadata.
-- [ ] Create initial migration.
-- [ ] Verify upgrade.
-- [ ] Verify downgrade.
-- [ ] Verify upgrade again.
+- [X] Initialize Alembic.
+- [X] Configure database URL.
+- [X] Connect Alembic metadata.
+- [X] Create initial migration.
+- [X] Verify upgrade.
+- [X] Verify downgrade.
+- [X] Verify upgrade again.
 
 ---
 

@@ -24,6 +24,9 @@ RUN uv pip install --system -r requirements.txt
 # Copy application source.
 COPY backend ./backend
 COPY tests ./tests
+COPY alembic.ini ./
+COPY alembic ./alembic
+
 
 
 # Change ownership to non-root user.
