@@ -1,0 +1,152 @@
+# ==============================
+# Python
+# ==============================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# ==============================
+# Virtual Environment
+# ==============================
+.venv/
+venv/
+env/
+ENV/
+
+# ==============================
+# Environment / Secrets
+# ==============================
+.env
+.env.*
+!.env.example
+
+# ==============================
+# Testing
+# ==============================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
+# ==============================
+# Type Checking / Linters
+# ==============================
+.mypy_cache/
+.pyright/
+.ruff_cache/
+
+# ==============================
+# IDEs / Editors
+# ==============================
+.idea/
+.vscode/
+*.code-workspace
+
+# ==============================
+# OS Files
+# ==============================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==============================
+# Logs
+# ==============================
+*.log
+logs/
+
+# ==============================
+# Local Database / Storage
+# ==============================
+storage/
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# ==============================
+# Audio / Voice Files
+# ==============================
+*.wav
+*.mp3
+*.m4a
+*.ogg
+*.flac
+*.aac
+
+# ==============================
+# Generated Recordings
+# ==============================
+recordings/
+transcripts/
+generations/
+
+# ==============================
+# Temporary Files
+# ==============================
+tmp/
+temp/
+*.tmp
+*.temp
+
+# ==============================
+# Build / Distribution
+# ==============================
+build/
+dist/
+*.egg-info/
+
+# ==============================
+# Docker
+# ==============================
+docker-compose.override.yml
+
+# ==============================
+# Coverage / Reports
+# ==============================
+coverage.xml
+junit.xml
+.pytest_cache/
+
+# ==============================
+# Jupyter
+# ==============================
+.ipynb_checkpoints/
+
+# ==============================
+# Alembic
+# ==============================
+# Keep migration files tracked.
+# Do NOT ignore the alembic/versions/ directory.
+
+# ==============================
+# Secrets / Certificates
+# ==============================
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# ==============================
+# Node / Frontend (future)
+# ==============================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+.next/
+.nuxt/
+dist/
+
+# ==============================
+# Misc
+# ==============================
+*.bak
+*.swp
+*.swo
