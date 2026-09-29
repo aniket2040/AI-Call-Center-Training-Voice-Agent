@@ -116,13 +116,13 @@ Admin / API Client
 
 ## Repository
 
-- [ ] Create Git repository.
-- [ ] Create root `README.md`.
-- [ ] Create root `.gitignore`.
-- [ ] Create `.env.example`.
-- [ ] Create `TASK.md`.
-- [ ] Create `LICENSE`.
-- [ ] Create `docs/` directory.
+- [X] Create Git repository.
+- [X] Create root `README.md`.
+- [X] Create root `.gitignore`.
+- [X] Create `.env.example`.
+- [X] Create `TASK.md`.
+- [X] Create `LICENSE`.
+- [X] Create `docs/` directory.
 
 ## Initial structure
 
@@ -144,9 +144,9 @@ ai-call-center-training-agent/
 
 ## Git
 
-- [ ] Make initial commit.
-- [ ] Use meaningful commit messages.
-- [ ] Create feature branches for major phases.
+- [X] Make initial commit.
+- [X] Use meaningful commit messages.
+- [X] Create feature branches for major phases.
 
 ---
 
@@ -154,34 +154,34 @@ ai-call-center-training-agent/
 
 ## Python
 
-- [ ] Select supported Python version.
-- [ ] Create virtual environment.
-- [ ] Create `requirements.txt` or `pyproject.toml`.
-- [ ] Configure development dependencies.
+- [X] Select supported Python version.
+- [X] Create virtual environment.
+- [X] Create `requirements.txt` or `pyproject.toml`.
+- [X] Configure development dependencies.
 
 ## Required backend packages
 
-- [ ] FastAPI.
-- [ ] Uvicorn.
-- [ ] Pydantic.
-- [ ] Pydantic Settings.
-- [ ] SQLAlchemy.
-- [ ] Async PostgreSQL driver.
-- [ ] Alembic.
-- [ ] Pytest.
-- [ ] Async test support.
-- [ ] HTTP test client.
-- [ ] LiveKit Agents SDK.
-- [ ] LiveKit API SDK.
-- [ ] Required model-provider SDKs.
-- [ ] Structured logging package if required.
+- [X] FastAPI.
+- [X] Uvicorn.
+- [X] Pydantic.
+- [X] Pydantic Settings.
+- [X] SQLAlchemy.
+- [X] Async PostgreSQL driver.
+- [X] Alembic.
+- [X] Pytest.
+- [X] Async test support.
+- [X] HTTP test client.
+- [X] LiveKit Agents SDK.
+- [X] LiveKit API SDK.
+- [X] Required model-provider SDKs.
+- [X] Structured logging package if required.
 
 ## Dependency rules
 
-- [ ] Pin production dependencies appropriately.
-- [ ] Separate development dependencies where practical.
-- [ ] Remove unused dependencies.
-- [ ] Document why each major dependency exists.
+- [X] Pin production dependencies appropriately.
+- [X] Separate development dependencies where practical.
+- [X] Remove unused dependencies.
+- [X] Document why each major dependency exists.
 
 ---
 
@@ -205,57 +205,57 @@ backend/app/config.py
 
 ### Application
 
-- [ ] `APP_NAME`
-- [ ] `APP_ENV`
-- [ ] `DEBUG`
-- [ ] `LOG_LEVEL`
+- [X] `APP_NAME`
+- [X] `APP_ENV`
+- [X] `DEBUG`
+- [X] `LOG_LEVEL`
 
 ### Database
 
-- [ ] `DATABASE_URL`
+- [X] `DATABASE_URL`
 
 ### LiveKit
 
-- [ ] `LIVEKIT_URL`
-- [ ] `LIVEKIT_API_KEY`
-- [ ] `LIVEKIT_API_SECRET`
+- [X] `LIVEKIT_URL`
+- [X] `LIVEKIT_API_KEY`
+- [X] `LIVEKIT_API_SECRET`
 
 ### LLM
 
-- [ ] Provider configuration.
-- [ ] Model name.
-- [ ] API key.
+- [X] Provider configuration.
+- [X] Model name.
+- [X] API key.
 
 ### STT
 
-- [ ] Provider.
-- [ ] Model.
-- [ ] API key.
+- [X] Provider.
+- [X] Model.
+- [X] API key.
 
 ### TTS
 
-- [ ] Provider.
-- [ ] Model.
-- [ ] API key.
+- [X] Provider.
+- [X] Model.
+- [X] API key.
 
 ### Storage
 
-- [ ] Storage provider.
-- [ ] Bucket/container.
-- [ ] Region if required.
-- [ ] Credentials.
+- [X] Storage provider.
+- [X] Bucket/container.
+- [X] Region if required.
+- [X] Credentials.
 
 ### Telephony
 
-- [ ] SIP configuration.
-- [ ] Provider configuration.
-- [ ] Outbound caller identity if required.
+- [X] SIP configuration.
+- [X] Provider configuration.
+- [X] Outbound caller identity if required.
 
 ## Configuration tests
 
-- [ ] Test valid configuration.
-- [ ] Test missing required environment variable.
-- [ ] Test invalid configuration.
+- [X] Test valid configuration.
+- [X] Test missing required environment variable.
+- [X] Test invalid configuration.
 
 ---
 
@@ -269,16 +269,16 @@ backend/app/main.py
 
 ## Application
 
-- [ ] Create FastAPI application.
-- [ ] Configure application lifespan.
-- [ ] Register routers.
-- [ ] Configure exception handlers.
-- [ ] Configure middleware.
-- [ ] Configure request ID/correlation ID.
-- [ ] Configure CORS only for required origins.
-- [ ] Add `/health`.
-- [ ] Add `/ready`.
-- [ ] Add API version prefix.
+- [X] Create FastAPI application.
+- [X] Configure application lifespan.
+- [X] Register routers.
+- [X] Configure exception handlers.
+- [X] Configure middleware.
+- [X] Configure request ID/correlation ID.
+- [X] Configure CORS only for required origins.
+- [X] Add `/health`.
+- [X] Add `/ready`.
+- [X] Add API version prefix.
 
 Target:
 
@@ -290,13 +290,13 @@ Target:
 
 ### `/health`
 
-- [ ] Return application health.
+- [X] Return application health.
 
 ### `/ready`
 
-- [ ] Check database connectivity.
-- [ ] Check required runtime dependencies.
-- [ ] Return readiness state.
+- [X] Check database connectivity.
+- [X] Check required runtime dependencies.
+- [X] Return readiness state.
 
 ---
 

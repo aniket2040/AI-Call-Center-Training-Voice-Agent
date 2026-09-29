@@ -1,0 +1,36 @@
+# ==============================
+# Web API
+# ==============================
+fastapi
+uvicorn[standard]
+
+# ==============================
+# Configuration & Validation
+# ==============================
+pydantic
+pydantic-settings
+
+# ==============================
+# Database
+# ==============================
+sqlalchemy[asyncio]
+asyncpg
+alembic
+
+# ==============================
+# LiveKit
+# ==============================
+livekit-agents
+livekit-api
+
+# ==============================
+# Logging
+# ==============================
+structlog
+
+# ==============================
+# Testing
+# ==============================
+pytest
+pytest-asyncio
+httpx
