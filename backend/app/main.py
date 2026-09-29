@@ -1,23 +1,26 @@
 from contextlib import asynccontextmanager
-from backend.app.core.logging import configure_logging, get_logger
 from fastapi import FastAPI
 
 from backend.app.api.v1.health import router as health_router
 from backend.app.api.v1.readiness import router as readiness_router
 from backend.app.config import settings
+from backend.app.core.events import LifecycleEvent
 from backend.app.core.exceptions import unhandled_exception_handler
 from backend.app.core.middleware import RequestIDMiddleware
+from backend.app.core.logging import (
+    configure_logging,
+    log_lifecycle_event,
+    get_logger,
+)
 
+
+configure_logging()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    configure_logging()
-
-    logger = get_logger(__name__)
-
-    logger.info(
-        "application_starting",
+    log_lifecycle_event(
+        LifecycleEvent.APPLICATION_STARTUP,
         environment=settings.app_env,
     )
 
@@ -25,8 +28,8 @@ async def lifespan(app: FastAPI):
 
     yield
 
-    logger.info(
-        "application_shutdown",
+    log_lifecycle_event(
+        LifecycleEvent.APPLICATION_SHUTDOWN,
     )
 
 

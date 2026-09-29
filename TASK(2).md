@@ -302,17 +302,17 @@ Target:
 
 # 6. Logging and Observability Foundation
 
-- [ ] Configure structured logging.
-- [ ] Add timestamp.
-- [ ] Add log level.
-- [ ] Add service name.
-- [ ] Add request ID.
-- [ ] Add session ID where available.
-- [ ] Add call ID where available.
-- [ ] Never log API keys.
-- [ ] Never log sensitive phone numbers unnecessarily.
-- [ ] Avoid logging full conversation content by default.
-- [ ] Define log levels for agent lifecycle events.
+- [X] Configure structured logging.
+- [X] Add timestamp.
+- [X] Add log level.
+- [X] Add service name.
+- [X] Add request ID.
+- [X] Add session ID where available.
+- [X] Add call ID where available.
+- [X] Never log API keys.
+- [X] Never log sensitive phone numbers unnecessarily.
+- [X] Avoid logging full conversation content by default.
+- [X] Define log levels for agent lifecycle events.
 
 ## Required lifecycle logs
 

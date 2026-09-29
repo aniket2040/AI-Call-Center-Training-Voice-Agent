@@ -4,6 +4,8 @@ import sys
 import structlog
 
 from backend.app.config import settings
+from backend.app.core.events import LifecycleEvent
+
 
 def configure_logging() -> None:
     logging.basicConfig(
@@ -62,3 +64,20 @@ def bind_request_context(
 
     if values:
         structlog.contextvars.bind_contextvars(**values)
+
+
+def log_lifecycle_event(
+    event: LifecycleEvent,
+    *,
+    session_id: str | None = None,
+    call_id: str | None = None,
+    **metadata,
+) -> None:
+    logger = get_logger("lifecycle")
+
+    logger.info(
+        event.value,
+        session_id=session_id,
+        call_id=call_id,
+        **metadata,
+    )
