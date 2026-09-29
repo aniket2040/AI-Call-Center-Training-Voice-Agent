@@ -316,20 +316,20 @@ Target:
 
 ## Required lifecycle logs
 
-- [ ] Application startup.
-- [ ] Application shutdown.
-- [ ] API request.
-- [ ] Training session created.
-- [ ] Agent dispatched.
-- [ ] SIP call requested.
-- [ ] Participant connected.
-- [ ] Conversation started.
-- [ ] Conversation ended.
-- [ ] Recording finalized.
-- [ ] Transcript finalized.
-- [ ] Evaluation started.
-- [ ] Evaluation completed.
-- [ ] Evaluation failed.
+- [X] Application startup.
+- [X] Application shutdown.
+- [X] API request.
+- [X] Training session created.
+- [X] Agent dispatched.
+- [X] SIP call requested.
+- [X] Participant connected.
+- [X] Conversation started.
+- [X] Conversation ended.
+- [X] Recording finalized.
+- [X] Transcript finalized.
+- [X] Evaluation started.
+- [X] Evaluation completed.
+- [X] Evaluation failed.
 
 ---
 
