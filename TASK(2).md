@@ -408,12 +408,12 @@ users
 
 Fields:
 
-- [ ] `id`
-- [ ] `name`
-- [ ] `phone_number`
-- [ ] `role`
-- [ ] `created_at`
-- [ ] `updated_at`
+- [X] `id`
+- [X] `name`
+- [X] `phone_number`
+- [X] `role`
+- [X] `created_at`
+- [X] `updated_at`
 
 ## Scenarios
 
@@ -425,17 +425,17 @@ scenarios
 
 Fields:
 
-- [ ] `id`
-- [ ] `name`
-- [ ] `description`
-- [ ] `difficulty`
-- [ ] `persona_config`
-- [ ] `rules_config`
-- [ ] `objectives`
-- [ ] `evaluation_config`
-- [ ] `is_active`
-- [ ] `created_at`
-- [ ] `updated_at`
+- [X] `id`
+- [X] `name`
+- [X] `description`
+- [X] `difficulty`
+- [X] `persona_config`
+- [X] `rules_config`
+- [X] `objectives`
+- [X] `evaluation_config`
+- [X] `is_active`
+- [X] `created_at`
+- [X] `updated_at`
 
 ## Training Sessions
 
@@ -447,20 +447,20 @@ training_sessions
 
 Fields:
 
-- [ ] `id`
-- [ ] `trainee_id`
-- [ ] `scenario_id`
-- [ ] `livekit_room_name`
-- [ ] `livekit_participant_id`
-- [ ] `phone_number`
-- [ ] `status`
-- [ ] `started_at`
-- [ ] `ended_at`
-- [ ] `recording_path`
-- [ ] `transcript_path`
-- [ ] `failure_reason`
-- [ ] `created_at`
-- [ ] `updated_at`
+- [X] `id`
+- [X] `trainee_id`
+- [X] `scenario_id`
+- [X] `livekit_room_name`
+- [X] `livekit_participant_id`
+- [X] `phone_number`
+- [X] `status`
+- [X] `started_at`
+- [X] `ended_at`
+- [X] `recording_path`
+- [X] `transcript_path`
+- [X] `failure_reason`
+- [X] `created_at`
+- [X] `updated_at`
 
 ## Session Events
 
@@ -472,12 +472,12 @@ session_events
 
 Fields:
 
-- [ ] `id`
-- [ ] `session_id`
-- [ ] `event_type`
-- [ ] `event_timestamp`
-- [ ] `payload`
-- [ ] `created_at`
+- [X] `id`
+- [X] `session_id`
+- [X] `event_type`
+- [X] `event_timestamp`
+- [X] `payload`
+- [X] `created_at`
 
 ## Evaluations
 
@@ -489,34 +489,34 @@ evaluations
 
 Fields:
 
-- [ ] `id`
-- [ ] `session_id`
-- [ ] `status`
-- [ ] `overall_score`
-- [ ] `criteria_scores`
-- [ ] `evidence`
-- [ ] `strengths`
-- [ ] `weaknesses`
-- [ ] `feedback`
-- [ ] `model`
-- [ ] `created_at`
-- [ ] `updated_at`
+- [X] `id`
+- [X] `session_id`
+- [X] `status`
+- [X] `overall_score`
+- [X] `criteria_scores`
+- [X] `evidence`
+- [X] `strengths`
+- [X] `weaknesses`
+- [X] `feedback`
+- [X] `model`
+- [X] `created_at`
+- [X] `updated_at`
 
 ## Relationships
 
-- [ ] User → Training Sessions.
-- [ ] Scenario → Training Sessions.
-- [ ] Training Session → Session Events.
-- [ ] Training Session → Evaluation.
+- [X] User → Training Sessions.
+- [X] Scenario → Training Sessions.
+- [X] Training Session → Session Events.
+- [X] Training Session → Evaluation.
 
 ## Database constraints
 
-- [ ] Add primary keys.
-- [ ] Add foreign keys.
-- [ ] Add indexes.
-- [ ] Add uniqueness constraints where required.
-- [ ] Add status validation at application layer.
-- [ ] Add timestamps.
+- [X] Add primary keys.
+- [X] Add foreign keys.
+- [X] Add indexes.
+- [X] Add uniqueness constraints where required.
+- [X] Add status validation at application layer.
+- [X] Add timestamps.
 
 ---
 
@@ -530,19 +530,19 @@ backend/app/repositories/
 
 Implement:
 
-- [ ] `UserRepository`
-- [ ] `ScenarioRepository`
-- [ ] `TrainingSessionRepository`
-- [ ] `SessionEventRepository`
-- [ ] `EvaluationRepository`
+- [X] `UserRepository`
+- [X] `ScenarioRepository`
+- [X] `TrainingSessionRepository`
+- [X] `SessionEventRepository`
+- [X] `EvaluationRepository`
 
 Each repository should:
 
-- [ ] Have typed methods.
-- [ ] Handle database operations only.
-- [ ] Not contain LLM logic.
-- [ ] Not contain LiveKit logic.
-- [ ] Be independently testable.
+- [X] Have typed methods.
+- [X] Handle database operations only.
+- [X] Not contain LLM logic.
+- [X] Not contain LiveKit logic.
+- [X] Be independently testable.
 
 ---
 
