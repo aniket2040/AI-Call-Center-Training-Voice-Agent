@@ -39,8 +39,18 @@ class SituationConfig(BaseModel):
 class RulesConfig(BaseModel):
     """Behavioral rules for the scenario."""
 
+    model_config = ConfigDict(extra="forbid")
+
     become_angry_if_ignored: bool = False
     calm_if_handled_well: bool = False
+
+    escalate_if_repeated_failures: int | None = Field(
+        default=None,
+        ge=1,
+    )
+    escalate_if_patience_low: bool = False
+    escalate_if_identity_verification_fails: bool = False
+
 
 
 class EvaluationConfig(BaseModel):

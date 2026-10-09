@@ -37,6 +37,7 @@ def apply_transition(
     """
 
     new_state = state.model_copy(deep=True)
+    new_state.event_history.append(event.value)
 
     if event == ConversationEvent.TURN_COMPLETED:
         new_state.turn_count += 1
@@ -117,12 +118,16 @@ def apply_transition(
 
         if new_state.customer_mood == CustomerMood.ANGRY:
             new_state.customer_mood = CustomerMood.FRUSTRATED
-
         elif new_state.customer_mood == CustomerMood.FRUSTRATED:
             new_state.customer_mood = CustomerMood.NEUTRAL
-
         elif new_state.customer_mood == CustomerMood.NEUTRAL:
             new_state.customer_mood = CustomerMood.CALM
+
+        # Empathy increases the customer's patience.
+        if new_state.customer_patience == CustomerPatience.LOW:
+            new_state.customer_patience = CustomerPatience.MEDIUM
+        elif new_state.customer_patience == CustomerPatience.MEDIUM:
+            new_state.customer_patience = CustomerPatience.HIGH
 
         return new_state
 
@@ -139,6 +144,33 @@ def apply_transition(
         if new_state.customer_patience == CustomerPatience.HIGH:
             new_state.customer_patience = CustomerPatience.MEDIUM
 
+        elif new_state.customer_patience == CustomerPatience.MEDIUM:
+            new_state.customer_patience = CustomerPatience.LOW
+
+        return new_state
+
+    if event == ConversationEvent.REPEATED_QUESTION:
+        new_state.repeated_question_count += 1
+
+        if new_state.customer_patience == CustomerPatience.HIGH:
+            new_state.customer_patience = CustomerPatience.MEDIUM
+        elif new_state.customer_patience == CustomerPatience.MEDIUM:
+            new_state.customer_patience = CustomerPatience.LOW
+
+        return new_state
+
+    if event == ConversationEvent.REPEATED_FAILURE:
+        new_state.failure_count += 1
+
+        if new_state.customer_mood == CustomerMood.CALM:
+            new_state.customer_mood = CustomerMood.NEUTRAL
+        elif new_state.customer_mood == CustomerMood.NEUTRAL:
+            new_state.customer_mood = CustomerMood.FRUSTRATED
+        elif new_state.customer_mood == CustomerMood.FRUSTRATED:
+            new_state.customer_mood = CustomerMood.ANGRY
+
+        if new_state.customer_patience == CustomerPatience.HIGH:
+            new_state.customer_patience = CustomerPatience.MEDIUM
         elif new_state.customer_patience == CustomerPatience.MEDIUM:
             new_state.customer_patience = CustomerPatience.LOW
 
@@ -186,7 +218,28 @@ def apply_transition(
         new_state.resolution = ResolutionStatus.REJECTED
         return new_state
 
+    if event == ConversationEvent.RESOLUTION_SUCCESSFUL:
+        if new_state.resolution not in {
+            ResolutionStatus.OFFERED,
+            ResolutionStatus.ACCEPTED,
+        }:
+            raise InvalidStateTransition(
+                "Successful resolution requires an offered "
+                "or accepted resolution."
+            )
+
+        new_state.resolution = ResolutionStatus.ACCEPTED
+        new_state.customer_mood = CustomerMood.SATISFIED
+        return new_state
+
     if event == ConversationEvent.ESCALATION_REQUESTED:
+        if new_state.escalation == EscalationStatus.ESCALATED:
+            return new_state
+
+        new_state.escalation = EscalationStatus.REQUESTED
+        return new_state
+
+    if event == ConversationEvent.ESCALATION_TRIGGERED:
         if new_state.escalation == EscalationStatus.ESCALATED:
             return new_state
 

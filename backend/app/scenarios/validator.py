@@ -21,7 +21,8 @@ def validate_scenario(scenario: Scenario) -> ScenarioDefinition:
     """
 
     try:
-        situation_config = scenario.rules_config.get("situation", {})
+        rules_config = dict(scenario.rules_config or {})
+        situation_config = rules_config.pop("situation", {})
 
         return ScenarioDefinition(
             id=str(scenario.id),
@@ -35,7 +36,7 @@ def validate_scenario(scenario: Scenario) -> ScenarioDefinition:
             ),
             objectives=scenario.objectives,
             rules=RulesConfig.model_validate(
-                scenario.rules_config,
+                rules_config,
             ),
             evaluation=EvaluationConfig.model_validate(
                 scenario.evaluation_config,

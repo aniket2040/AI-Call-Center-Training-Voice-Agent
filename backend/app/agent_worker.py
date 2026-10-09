@@ -70,8 +70,15 @@ async def training_agent(ctx: JobContext) -> None:
         )
 
         session = create_training_session()
+        customer = TrainingCustomer(scenario)
+
         register_session_events(session)
-        register_transcript_events(session)
+        register_transcript_events(session, customer)
+
+        await session.start(
+            room=ctx.room,
+            agent=customer,
+        )
 
         await session.start(
             room=ctx.room,

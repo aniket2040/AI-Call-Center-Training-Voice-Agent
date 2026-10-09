@@ -21,3 +21,8 @@ class ConversationEvent(StrEnum):
 
     ESCALATION_REQUESTED = "escalation_requested"
     ESCALATION_COMPLETED = "escalation_completed"
+
+    REPEATED_QUESTION = "repeated_question"
+    REPEATED_FAILURE = "repeated_failure"
+    RESOLUTION_SUCCESSFUL = "resolution_successful"
+    ESCALATION_TRIGGERED = "escalation_triggered"

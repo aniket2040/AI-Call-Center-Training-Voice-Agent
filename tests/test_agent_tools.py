@@ -96,3 +96,26 @@ def test_escalation_is_idempotent():
 def test_escalation_rejects_invalid_reason():
     with pytest.raises(ValueError):
         escalate_to_supervisor("bad", AgentToolState())
+
+
+
+def test_supervisor_escalation_is_idempotent():
+    from backend.app.agents.tools import (
+        AgentToolState,
+        escalate_to_supervisor,
+    )
+
+    state = AgentToolState()
+
+    first = escalate_to_supervisor(
+        "Repeated failures",
+        state,
+    )
+    second = escalate_to_supervisor(
+        "Repeated failures",
+        state,
+    )
+
+    assert first.escalation_id == second.escalation_id
+    assert state.escalated is True
+    assert state.escalation_reason == "Repeated failures"

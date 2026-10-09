@@ -8,6 +8,7 @@ from backend.app.agents.state.enums import (
     ResolutionStatus,
     VerificationStatus,
 )
+from backend.app.agents.state.escalation import evaluate_escalation
 from backend.app.agents.state.events import ConversationEvent
 from backend.app.agents.state.models import ConversationState
 from backend.app.agents.state.transitions import (
@@ -32,4 +33,5 @@ __all__ = [
     "TransitionContext",
     "apply_transition",
     "complete_objective",
+    "evaluate_escalation"
 ]

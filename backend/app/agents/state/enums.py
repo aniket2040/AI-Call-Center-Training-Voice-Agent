@@ -6,6 +6,7 @@ class CustomerMood(StrEnum):
     NEUTRAL = "neutral"
     FRUSTRATED = "frustrated"
     ANGRY = "angry"
+    SATISFIED = "satisfied"
 
 
 class CustomerPatience(StrEnum):

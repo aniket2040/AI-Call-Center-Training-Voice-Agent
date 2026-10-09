@@ -68,6 +68,16 @@ def build_training_scenario(scenario: Scenario) -> TrainingScenarioMetadata:
     situation = persona_config.get("situation")
     rules = rules_config.get("rules")
 
+    escalate_if_repeated_failures = rules_config.get(
+        "escalate_if_repeated_failures"
+    )
+    escalate_if_patience_low = rules_config.get(
+        "escalate_if_patience_low", False
+    )
+    escalate_if_identity_verification_fails = rules_config.get(
+        "escalate_if_identity_verification_fails", False
+    )
+
     if not isinstance(persona, str) or not persona.strip():
         raise AgentSessionValidationError(
             "Scenario persona configuration is missing a valid persona."
@@ -100,4 +110,9 @@ def build_training_scenario(scenario: Scenario) -> TrainingScenarioMetadata:
         situation=situation,
         rules=rules,
         objectives=scenario.objectives,
+        escalate_if_repeated_failures=escalate_if_repeated_failures,
+        escalate_if_patience_low=escalate_if_patience_low,
+        escalate_if_identity_verification_fails=(
+            escalate_if_identity_verification_fails
+        ),
     )

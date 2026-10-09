@@ -47,6 +47,17 @@ class ConversationState(BaseModel):
         default=0,
         ge=0,
     )
+    repeated_question_count: int = Field(
+        default=0,
+        ge=0
+    )
+
+    failure_count: int = Field(
+        default=0,
+        ge=0
+    )
+
+    event_history: list[str] = Field(default_factory=list)
 
     def to_dict(self) -> dict:
         """Return a JSON-serializable representation."""

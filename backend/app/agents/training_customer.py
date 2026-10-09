@@ -12,7 +12,9 @@ from livekit.agents import (
     APIConnectOptions
 )
 from livekit.agents import function_tool
-
+from backend.app.agents.state.transcript_classifier import (
+    classify_transcript,
+)
 from backend.app.agents.tools import (
     AgentToolState,
     create_support_ticket,
@@ -24,6 +26,12 @@ from backend.app.agents.tools import (
 from livekit.agents.voice.agent_session import SessionConnectOptions
 
 from backend.app.config import settings
+from backend.app.agents.state.engine import ConversationStateEngine
+from backend.app.agents.state.enums import CustomerMood
+from backend.app.agents.state.events import ConversationEvent
+from backend.app.agents.state.escalation import evaluate_escalation
+from backend.app.agents.state.models import ConversationState
+from backend.app.scenarios.models import RulesConfig
 
 
 logger = get_logger("training_customer")
@@ -36,6 +44,9 @@ class TrainingScenarioMetadata:
     situation: str
     rules: list[str]
     objectives: list[str]
+    escalate_if_repeated_failures: int | None = None
+    escalate_if_patience_low: bool = False
+    escalate_if_identity_verification_fails: bool = False
 
 
 
@@ -45,6 +56,22 @@ class TrainingCustomer(Agent):
         scenario: TrainingScenarioMetadata,
     ) -> None:
         self.tool_state = AgentToolState()
+        self.state_engine = ConversationStateEngine(
+            initial_state=ConversationState(
+                customer_mood=CustomerMood.NEUTRAL,
+            )
+        )
+        self._previous_customer_transcript: str | None = None
+
+        self.scenario_rules = RulesConfig(
+            escalate_if_repeated_failures=(
+                scenario.escalate_if_repeated_failures
+            ),
+            escalate_if_patience_low=scenario.escalate_if_patience_low,
+            escalate_if_identity_verification_fails=(
+                scenario.escalate_if_identity_verification_fails
+            ),
+        )
 
         instructions = f"""
 You are the customer in a call-center representative training simulation.
@@ -83,6 +110,62 @@ Respond naturally and concisely, as a real customer would speak on a phone call.
         super().__init__(
             instructions=instructions,
         )
+
+
+    def apply_behavior_event(
+        self,
+        event: ConversationEvent,
+    ) -> dict:
+        """Apply a behavior event and record configured escalations."""
+        state = self.state_engine.apply_event(event)
+
+        escalation_event = evaluate_escalation(
+            state,
+            self.scenario_rules,
+        )
+
+        if escalation_event is not None:
+            state = self.state_engine.apply_event(escalation_event)
+
+            if not self.tool_state.escalated:
+                if (
+                    self.scenario_rules.escalate_if_repeated_failures
+                    is not None
+                    and state.failure_count
+                    >= self.scenario_rules.escalate_if_repeated_failures
+                ):
+                    reason = "Repeated failure threshold reached"
+                elif (
+                    self.scenario_rules.escalate_if_patience_low
+                    and state.customer_patience.value == "low"
+                ):
+                    reason = "Customer patience reached low"
+                else:
+                    reason = "Identity verification failed"
+
+                record_escalation(reason, self.tool_state)
+
+        logger.info(
+            "Customer behavior state updated",
+            extra={
+                "event": event.value,
+                "customer_mood": state.customer_mood.value,
+                "customer_patience": state.customer_patience.value,
+                "escalation": state.escalation.value,
+            },
+        )
+
+        return state.to_dict()
+
+
+
+    def handle_behavior_event(
+        self,
+        event: ConversationEvent,
+    ) -> dict:
+        """Apply a conversation behavior event to the scenario state."""
+        return self.apply_behavior_event(event)
+
 
     @function_tool
     async def lookup_customer(self, customer_id: str) -> str:
@@ -233,14 +316,38 @@ def register_session_events(
             recoverable=getattr(error, "recoverable", None),
         )
 
+
+
 def register_transcript_events(
     session: AgentSession,
+    customer: TrainingCustomer,
 ) -> None:
+    """Register transcript handlers for the active training customer."""
 
     @session.on("user_input_transcribed")
     def on_user_input_transcribed(event) -> None:
-        if event.is_final:
-            print(
-                "user_transcript",
-                event.transcript,
-            )
+        if not event.is_final:
+            return
+
+        transcript = event.transcript.strip()
+        if not transcript:
+            return
+
+        classification = classify_transcript(
+            transcript,
+            customer._previous_customer_transcript,
+        )
+
+        for behavior_event in classification.events:
+            customer.handle_behavior_event(behavior_event)
+
+        customer._previous_customer_transcript = transcript
+
+        logger.info(
+            "user_transcript_received",
+            transcript=transcript,
+            classified_events=[
+                behavior_event.value
+                for behavior_event in classification.events
+            ],
+        )

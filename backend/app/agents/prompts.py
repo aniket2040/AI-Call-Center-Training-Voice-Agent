@@ -125,6 +125,28 @@ def build_rules_context(
             "the problem appropriately, become calmer."
         )
 
+    if scenario.rules.escalate_if_repeated_failures is not None:
+        rules.append(
+            "- Escalation is appropriate after "
+            f"{scenario.rules.escalate_if_repeated_failures} "
+            "repeated failures."
+        )
+
+    if scenario.rules.escalate_if_patience_low:
+        rules.append(
+            "- Consider escalation when the customer's patience "
+            "becomes low."
+        )
+
+    if scenario.rules.escalate_if_identity_verification_fails:
+        rules.append(
+            "- Follow the scenario's escalation path when identity "
+            "verification fails."
+        )
+
+
+
+
     if not rules:
         rules.append(
             "- Follow the customer's persona and situation naturally."
