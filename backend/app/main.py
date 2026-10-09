@@ -11,7 +11,7 @@ from backend.app.core.logging import (
     configure_logging,
     log_lifecycle_event,
 )
-
+from backend.app.api.v1.calls import router as calls_router
 
 configure_logging()
 
@@ -72,6 +72,11 @@ app.include_router(
 
 app.include_router(
     readiness_router,
+    prefix=API_V1_PREFIX,
+)
+
+app.include_router(
+    calls_router,
     prefix=API_V1_PREFIX,
 )
 

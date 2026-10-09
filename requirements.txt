@@ -22,6 +22,12 @@ alembic
 # ==============================
 livekit-agents
 livekit-api
+livekit
+
+# ==============================
+# Environment
+# ==============================
+python-dotenv
 
 # ==============================
 # Logging

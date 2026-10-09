@@ -1,14 +1,17 @@
 from enum import StrEnum
 
 
+
 class TrainingSessionStatus(StrEnum):
     CREATED = "created"
-    DISPATCHED = "dispatched"
+    DISPATCHING = "dispatching"
     CONNECTING = "connecting"
-    IN_PROGRESS = "in_progress"
+    ACTIVE = "active"
+    ENDING = "ending"
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
+    TIMEOUT = "timeout"
 
 
 class EvaluationStatus(StrEnum):

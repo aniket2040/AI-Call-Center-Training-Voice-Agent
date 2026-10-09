@@ -656,15 +656,15 @@ backend/app/agents/state/
 
 Implement:
 
-- [ ] Customer mood.
-- [ ] Customer patience.
-- [ ] Identity verification state.
-- [ ] Problem understanding state.
-- [ ] Empathy state.
-- [ ] Resolution state.
-- [ ] Escalation state.
-- [ ] Scenario objectives completed.
-- [ ] Conversation turn count.
+- [X] Customer mood.
+- [X] Customer patience.
+- [X] Identity verification state.
+- [X] Problem understanding state.
+- [X] Empathy state.
+- [X] Resolution state.
+- [X] Escalation state.
+- [X] Scenario objectives completed.
+- [X] Conversation turn count.
 
 ## State transitions
 
@@ -690,11 +690,11 @@ customer_mood = more_frustrated
 
 ## Requirements
 
-- [ ] State must be serializable.
-- [ ] State must be inspectable.
-- [ ] State must not depend directly on LiveKit.
-- [ ] State transitions must be unit-testable.
-- [ ] Prevent impossible state transitions.
+- [X] State must be serializable.
+- [X] State must be inspectable.
+- [X] State must not depend directly on LiveKit.
+- [X] State transitions must be unit-testable.
+- [X] Prevent impossible state transitions.
 
 ---
 
@@ -710,13 +710,13 @@ backend/app/agents/prompts.py
 
 Separate:
 
-1. [ ] Agent identity.
-2. [ ] Scenario.
-3. [ ] Persona.
-4. [ ] Current state.
-5. [ ] Rules.
-6. [ ] Objectives.
-7. [ ] Tool instructions.
+1. [X] Agent identity.
+2. [X] Scenario.
+3. [X] Persona.
+4. [X] Current state.
+5. [X] Rules.
+6. [X] Objectives.
+7. [X] Tool instructions.
 
 Do not create one giant hardcoded prompt.
 
@@ -733,13 +733,13 @@ build_agent_instructions(
 
 ## Requirements
 
-- [ ] Agent stays in persona.
-- [ ] Agent does not reveal hidden scenario information.
-- [ ] Agent does not reveal evaluation criteria unnecessarily.
-- [ ] Agent responds naturally.
-- [ ] Agent respects scenario rules.
-- [ ] Agent does not invent business data when a tool is required.
-- [ ] Agent knows when the scenario should end.
+- [X] Agent stays in persona.
+- [X] Agent does not reveal hidden scenario information.
+- [X] Agent does not reveal evaluation criteria unnecessarily.
+- [X] Agent responds naturally.
+- [X] Agent respects scenario rules.
+- [X] Agent does not invent business data when a tool is required.
+- [X] Agent knows when the scenario should end.
 
 ---
 
@@ -747,13 +747,13 @@ build_agent_instructions(
 
 ## LiveKit
 
-- [ ] Create LiveKit project.
-- [ ] Obtain development API credentials.
-- [ ] Configure LiveKit URL.
-- [ ] Configure API key.
-- [ ] Configure API secret.
-- [ ] Install LiveKit Agents Python dependencies.
-- [ ] Install required plugins/model integrations.
+- [X] Create LiveKit project.
+- [X] Obtain development API credentials.
+- [X] Configure LiveKit URL.
+- [X] Configure API key.
+- [X] Configure API secret.
+- [X] Install LiveKit Agents Python dependencies.
+- [X] Install required plugins/model integrations.
 
 ## Local agent
 
@@ -763,12 +763,12 @@ Create:
 backend/app/agent_worker.py
 ```
 
-- [ ] Start LiveKit agent worker.
-- [ ] Register agent.
-- [ ] Verify worker connects successfully.
-- [ ] Verify worker receives a job.
-- [ ] Log job lifecycle.
-- [ ] Gracefully handle shutdown.
+- [X] Start LiveKit agent worker.
+- [X] Register agent.
+- [X] Verify worker connects successfully.
+- [X] Verify worker receives a job.
+- [X] Log job lifecycle.
+- [X] Gracefully handle shutdown.
 
 ---
 
@@ -782,16 +782,16 @@ backend/app/agents/training_customer.py
 
 ## Agent
 
-- [ ] Create training customer agent.
-- [ ] Accept scenario metadata.
-- [ ] Build scenario-specific instructions.
-- [ ] Create `AgentSession`.
-- [ ] Configure STT.
-- [ ] Configure LLM.
-- [ ] Configure TTS.
-- [ ] Start session.
-- [ ] Handle session events.
-- [ ] Handle shutdown.
+- [X] Create training customer agent.
+- [X] Accept scenario metadata.
+- [X] Build scenario-specific instructions.
+- [X] Create `AgentSession`.
+- [X] Configure STT.
+- [X] Configure LLM.
+- [X] Configure TTS.
+- [X] Start session.
+- [X] Handle session events.
+- [X] Handle shutdown.
 
 ## First milestone
 
@@ -817,39 +817,39 @@ Do not add telephony yet.
 
 ## STT
 
-- [ ] Select STT provider.
-- [ ] Configure model.
-- [ ] Configure language.
-- [ ] Configure endpointing/turn detection.
-- [ ] Test transcription accuracy.
-- [ ] Handle STT failures.
+- [X] Select STT provider.
+- [X] Configure model.
+- [X] Configure language.
+- [X] Configure endpointing/turn detection.
+- [X] Test transcription accuracy.
+- [X] Handle STT failures.
 
 ## LLM
 
-- [ ] Select LLM provider.
-- [ ] Configure model.
-- [ ] Configure temperature.
-- [ ] Configure token limits.
-- [ ] Configure system instructions.
-- [ ] Handle timeout.
-- [ ] Handle provider errors.
+- [X] Select LLM provider.
+- [X] Configure model.
+- [X] Configure temperature.
+- [X] Configure token limits.
+- [X] Configure system instructions.
+- [X] Handle timeout.
+- [X] Handle provider errors.
 
 ## TTS
 
-- [ ] Select TTS provider.
-- [ ] Configure voice.
-- [ ] Configure language.
-- [ ] Configure output format.
-- [ ] Handle TTS errors.
+- [X] Select TTS provider.
+- [X] Configure voice.
+- [X] Configure language.
+- [X] Configure output format.
+- [X] Handle TTS errors.
 
 ## Voice quality
 
-- [ ] Test latency.
-- [ ] Test interruptions.
-- [ ] Test long responses.
-- [ ] Test silence.
-- [ ] Test rapid user speech.
-- [ ] Test repeated interruptions.
+- [X] Test latency.
+- [X] Test interruptions.
+- [X] Test long responses.
+- [X] Test silence.
+- [X] Test rapid user speech.
+- [X] Test repeated interruptions.
 
 ---
 
@@ -881,12 +881,12 @@ TIMEOUT
 
 ## Requirements
 
-- [ ] Define valid state transitions.
-- [ ] Reject invalid transitions.
+- [X] Define valid state transitions.
+- [X] Reject invalid transitions.
 - [ ] Persist every major transition.
 - [ ] Store transition timestamps.
 - [ ] Store failure reason.
-- [ ] Make lifecycle idempotent.
+- [X] Make lifecycle idempotent.
 
 ---
 
@@ -905,10 +905,10 @@ When dispatching the agent, pass:
 
 ## Requirements
 
-- [ ] Validate metadata.
-- [ ] Prevent missing session ID.
-- [ ] Load session from database.
-- [ ] Load scenario from database.
+- [X] Validate metadata.
+- [X] Prevent missing session ID.
+- [X] Load session from database.
+- [X] Load scenario from database.
 - [ ] Initialize conversation state.
 - [ ] Reject unauthorized/invalid session.
 
@@ -930,9 +930,9 @@ Start with simulated business tools.
 get_customer()
 ```
 
-- [ ] Accept customer identifier.
-- [ ] Return controlled customer data.
-- [ ] Validate input.
+- [X] Accept customer identifier.
+- [X] Return controlled customer data.
+- [X] Validate input.
 
 ## Order lookup
 
@@ -940,7 +940,7 @@ get_customer()
 get_order()
 ```
 
-- [ ] Return controlled order data.
+- [X] Return controlled order data.
 
 ## Refund status
 
@@ -948,16 +948,15 @@ get_order()
 get_refund_status()
 ```
 
-- [ ] Return refund information.
-
+- [X] Return refund information.
 ## Support ticket
 
 ```python
 create_support_ticket()
 ```
 
-- [ ] Create simulated ticket.
-- [ ] Return ticket ID.
+- [X] Create simulated ticket.
+- [X] Return ticket ID.
 
 ## Escalation
 
@@ -965,17 +964,17 @@ create_support_ticket()
 escalate_to_supervisor()
 ```
 
-- [ ] Record escalation.
-- [ ] Update session state.
+- [X] Record escalation.
+- [X] Update session state.
 
 ## Tool requirements
 
-- [ ] Tools have typed inputs.
-- [ ] Tools have typed outputs.
-- [ ] Tools validate input.
-- [ ] Tools log execution.
-- [ ] Tools do not expose secrets.
-- [ ] Tool failures are handled gracefully.
+- [X] Tools have typed inputs.
+- [X] Tools have typed outputs.
+- [X] Tools validate input.
+- [x] Tools log execution.
+- [X] Tools do not expose secrets.
+- [X] Tool failures are handled gracefully.
 
 ---
 

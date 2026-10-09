@@ -18,6 +18,16 @@ engine: AsyncEngine = create_async_engine(
     echo=settings.debug,
 )
 
+async def get_db():
+    """Provide a database session for a single request."""
+
+    async with AsyncSessionFactory() as session:
+        try:
+            yield session
+        except Exception:
+            await session.rollback()
+            raise
+
 
 AsyncSessionFactory = async_sessionmaker(
     bind=engine,
