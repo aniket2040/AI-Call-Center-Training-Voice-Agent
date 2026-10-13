@@ -996,22 +996,22 @@ satisfied
 
 ## Mood transitions
 
-- [ ] Empathy can reduce frustration.
-- [ ] Ignoring customer can increase frustration.
-- [ ] Repeated failures can increase frustration.
-- [ ] Successful resolution can create satisfaction.
+- [X] Empathy can reduce frustration.
+- [X] Ignoring customer can increase frustration.
+- [X] Repeated failures can increase frustration.
+- [X] Successful resolution can create satisfaction.
 
 ## Patience
 
-- [ ] Track patience.
-- [ ] Decrease patience when trainee repeats questions unnecessarily.
-- [ ] Increase tolerance when trainee demonstrates empathy.
+- [X] Track patience.
+- [X] Decrease patience when trainee repeats questions unnecessarily.
+- [X] Increase tolerance when trainee demonstrates empathy.
 
 ## Escalation
 
-- [ ] Define scenario escalation rules.
-- [ ] Trigger escalation when required.
-- [ ] Record escalation event.
+- [X] Define scenario escalation rules.
+- [X] Trigger escalation when required.
+- [X] Record escalation event.
 
 ---
 
@@ -1039,11 +1039,11 @@ TTS
 
 ## Requirements
 
-- [ ] Tool calls update session state.
-- [ ] Tool results are incorporated into conversation.
-- [ ] Tool errors are handled.
-- [ ] Tool calls are recorded as session events.
-- [ ] Agent cannot arbitrarily modify protected state.
+- [X] Tool calls update session state.
+- [X] Tool results are incorporated into conversation.
+- [X] Tool errors are handled.
+- [X] Tool calls are recorded as session events.
+- [X] Agent cannot arbitrarily modify protected state.
 
 ---
 

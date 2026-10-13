@@ -7,7 +7,7 @@ from backend.app.agents.tools import (
     escalate_to_supervisor,
     get_customer,
     get_order,
-    get_refund_status,
+    get_refund_status, AgentToolEventRecorder,
 )
 
 
@@ -119,3 +119,33 @@ def test_supervisor_escalation_is_idempotent():
     assert first.escalation_id == second.escalation_id
     assert state.escalated is True
     assert state.escalation_reason == "Repeated failures"
+
+def test_tool_event_recorder_records_success():
+    recorder = AgentToolEventRecorder()
+
+    recorder.record_success(
+        "lookup_customer",
+        "Customer lookup succeeded",
+    )
+
+    assert len(recorder.records) == 1
+    record = recorder.records[0]
+    assert record.tool_name == "lookup_customer"
+    assert record.status == "success"
+    assert record.result_summary == "Customer lookup succeeded"
+    assert record.error_type is None
+    assert record.timestamp.tzinfo is not None
+
+
+def test_tool_event_recorder_records_error_without_leaking_message():
+    recorder = AgentToolEventRecorder()
+    error = ValueError("sensitive internal details")
+
+    recorder.record_error("lookup_order", error)
+
+    assert len(recorder.records) == 1
+    record = recorder.records[0]
+    assert record.tool_name == "lookup_order"
+    assert record.status == "error"
+    assert record.error_type == "ValueError"
+    assert "sensitive internal details" not in record.result_summary

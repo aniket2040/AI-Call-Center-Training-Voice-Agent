@@ -158,20 +158,38 @@ def test_resolution_flow():
 
 
 def test_objective_completion():
-    engine = ConversationStateEngine()
-
-    state = engine.complete_objective(
-        "show_empathy",
+    engine = ConversationStateEngine(
+        allowed_objectives=["show_empathy"],
     )
 
+    state = engine.complete_objective("show_empathy")
     assert "show_empathy" in state.completed_objectives
 
     # Completion is idempotent.
-    state = engine.complete_objective(
-        "show_empathy",
+    state = engine.complete_objective("show_empathy")
+    assert len(state.completed_objectives) == 1
+
+
+def test_unauthorized_objective_is_rejected():
+    engine = ConversationStateEngine(
+        allowed_objectives=["show_empathy"],
     )
 
-    assert len(state.completed_objectives) == 1
+    with pytest.raises(InvalidStateTransition):
+        engine.complete_objective("issue_refund")
+
+    assert "issue_refund" not in engine.state.completed_objectives
+
+
+def test_empty_objective_is_rejected():
+    engine = ConversationStateEngine(
+        allowed_objectives=["show_empathy"],
+    )
+
+    with pytest.raises(InvalidStateTransition):
+        engine.complete_objective("")
+
+    assert not engine.state.completed_objectives
 
 
 def test_state_is_serializable():
@@ -192,14 +210,23 @@ def test_state_is_serializable():
     assert isinstance(encoded, str)
 
 
+
 def test_state_is_inspectable_without_mutating_it():
     engine = ConversationStateEngine()
 
+    engine.apply_event(ConversationEvent.TURN_COMPLETED)
     state = engine.state
 
     state.turn_count = 999
+    state.event_history.append("unauthorized_event")
+    state.completed_objectives.add("unauthorized_objective")
 
-    assert engine.state.turn_count == 0
+    internal_state = engine.state
+
+    assert internal_state.turn_count == 1
+    assert "unauthorized_event" not in internal_state.event_history
+    assert "unauthorized_objective" not in internal_state.completed_objectives
+
 
 
 def test_transition_does_not_mutate_original_state():
@@ -355,3 +382,31 @@ def test_event_history_is_serializable():
     assert engine.serialize()["event_history"] == [
         "escalation_triggered",
     ]
+
+
+
+def test_successful_tool_execution_is_recorded_without_changing_business_state():
+    engine = ConversationStateEngine()
+    before = engine.state
+
+    state = engine.record_tool_execution(succeeded=True)
+
+    assert state.event_history == ["tool_execution_succeeded"]
+    assert state.customer_mood == before.customer_mood
+    assert state.customer_patience == before.customer_patience
+    assert state.resolution == before.resolution
+    assert state.escalation == before.escalation
+
+
+def test_failed_tool_execution_is_recorded_without_changing_business_state():
+    engine = ConversationStateEngine()
+    before = engine.state
+
+    state = engine.record_tool_execution(succeeded=False)
+
+    assert state.event_history == ["tool_execution_failed"]
+    assert state.customer_mood == before.customer_mood
+    assert state.customer_patience == before.customer_patience
+    assert state.resolution == before.resolution
+    assert state.escalation == before.escalation
+

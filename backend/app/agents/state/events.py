@@ -26,3 +26,6 @@ class ConversationEvent(StrEnum):
     REPEATED_FAILURE = "repeated_failure"
     RESOLUTION_SUCCESSFUL = "resolution_successful"
     ESCALATION_TRIGGERED = "escalation_triggered"
+
+    TOOL_EXECUTION_SUCCEEDED = "tool_execution_succeeded"
+    TOOL_EXECUTION_FAILED = "tool_execution_failed"

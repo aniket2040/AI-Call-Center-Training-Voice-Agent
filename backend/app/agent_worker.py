@@ -20,7 +20,7 @@ from backend.app.agents.training_customer import (
     TrainingCustomer,
     create_training_session,
     register_session_events,
-    register_transcript_events,
+    register_transcript_events, register_tool_execution_events,
 )
 from backend.app.config import settings
 from backend.app.core.logging import configure_logging, get_logger
@@ -74,15 +74,11 @@ async def training_agent(ctx: JobContext) -> None:
 
         register_session_events(session)
         register_transcript_events(session, customer)
+        register_tool_execution_events(session)
 
         await session.start(
             room=ctx.room,
             agent=customer,
-        )
-
-        await session.start(
-            room=ctx.room,
-            agent=TrainingCustomer(scenario),
         )
 
         logger.info(

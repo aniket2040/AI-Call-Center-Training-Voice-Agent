@@ -43,6 +43,12 @@ def apply_transition(
         new_state.turn_count += 1
         return new_state
 
+    if event in {
+        ConversationEvent.TOOL_EXECUTION_SUCCEEDED,
+        ConversationEvent.TOOL_EXECUTION_FAILED,
+    }:
+        return new_state
+
     if event == ConversationEvent.IDENTITY_VERIFICATION_STARTED:
         if new_state.identity_verification not in {
             VerificationStatus.NOT_STARTED,

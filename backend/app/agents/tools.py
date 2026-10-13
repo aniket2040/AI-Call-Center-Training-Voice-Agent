@@ -1,11 +1,11 @@
 
 from __future__ import annotations
-
+from dataclasses import dataclass, field
 from dataclasses import dataclass
 from typing import Literal
 import re
 import uuid
-
+from datetime import datetime, timezone
 from pydantic import BaseModel, Field, ValidationError
 
 from backend.app.core.logging import get_logger
@@ -143,6 +143,52 @@ _REFUNDS = {
     },
 }
 
+
+class ToolCallRecord(BaseModel):
+    """Auditable record of a tool invocation in one agent session."""
+
+    model_config = {"extra": "forbid", "frozen": True}
+
+    tool_name: str = Field(min_length=1)
+    status: Literal["success", "error"]
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+    result_summary: str = ""
+    error_type: str | None = None
+
+@dataclass(slots=True)
+class AgentToolEventRecorder:
+    """Records tool calls for one agent session."""
+
+    records: list[ToolCallRecord] = field(default_factory=list)
+
+    def record_success(
+        self,
+        tool_name: str,
+        result_summary: str,
+    ) -> None:
+        self.records.append(
+            ToolCallRecord(
+                tool_name=tool_name,
+                status="success",
+                result_summary=result_summary[:200],
+            )
+        )
+
+    def record_error(
+        self,
+        tool_name: str,
+        error: Exception,
+    ) -> None:
+        self.records.append(
+            ToolCallRecord(
+                tool_name=tool_name,
+                status="error",
+                result_summary="Tool execution failed",
+                error_type=type(error).__name__,
+            )
+        )
 
 # ---- Business tools ----
 

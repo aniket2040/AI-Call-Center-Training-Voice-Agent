@@ -22,6 +22,7 @@ from backend.app.agents.tools import (
     get_customer,
     get_order,
     get_refund_status,
+    AgentToolEventRecorder
 )
 from livekit.agents.voice.agent_session import SessionConnectOptions
 
@@ -56,10 +57,12 @@ class TrainingCustomer(Agent):
         scenario: TrainingScenarioMetadata,
     ) -> None:
         self.tool_state = AgentToolState()
+        self.tool_events = AgentToolEventRecorder()
         self.state_engine = ConversationStateEngine(
             initial_state=ConversationState(
                 customer_mood=CustomerMood.NEUTRAL,
-            )
+            ),
+            allowed_objectives=scenario.objectives,
         )
         self._previous_customer_transcript: str | None = None
 
@@ -166,30 +169,83 @@ Respond naturally and concisely, as a real customer would speak on a phone call.
         """Apply a conversation behavior event to the scenario state."""
         return self.apply_behavior_event(event)
 
+    def _record_tool_success(self, tool_name: str, summary: str) -> None:
+        self.tool_events.record_success(tool_name, summary)
+        self.state_engine.record_tool_execution(succeeded=True)
+        logger.info(
+            "agent_tool_call",
+            tool_name=tool_name,
+            status="success",
+            result_summary=summary,
+        )
+
+    def _record_tool_error(self, tool_name: str, error: Exception) -> None:
+        self.tool_events.record_error(tool_name, error)
+        self.state_engine.record_tool_execution(succeeded=False)
+        logger.warning(
+            "agent_tool_call",
+            tool_name=tool_name,
+            status="error",
+            error_type=type(error).__name__,
+        )
+
 
     @function_tool
     async def lookup_customer(self, customer_id: str) -> str:
         """Look up a customer using an identifier such as CUST-A100."""
+        tool_name = "lookup_customer"
         try:
-            return get_customer(customer_id).model_dump_json()
-        except (ValueError, LookupError):
+            result = get_customer(customer_id).model_dump_json()
+            self._record_tool_success(
+                tool_name, "Customer lookup succeeded"
+            )
+            return result
+        except (ValueError, LookupError) as exc:
+            self._record_tool_error(tool_name, exc)
             return "Customer lookup failed. Check the identifier and try again."
+        except Exception as exc:
+            self._record_tool_error(tool_name, exc)
+            logger.exception("Customer lookup tool failed")
+            return "Customer lookup failed due to an internal error."
+
+
+
 
     @function_tool
     async def lookup_order(self, order_id: str) -> str:
         """Look up an order using an identifier such as ORD-A100."""
+        tool_name = "lookup_order"
         try:
-            return get_order(order_id).model_dump_json()
-        except (ValueError, LookupError):
+            result = get_order(order_id).model_dump_json()
+            self._record_tool_success(
+                tool_name, "Order lookup succeeded"
+            )
+            return result
+        except (ValueError, LookupError) as exc:
+            self._record_tool_error(tool_name, exc)
             return "Order lookup failed. Check the identifier and try again."
+        except Exception as exc:
+            self._record_tool_error(tool_name, exc)
+            logger.exception("Order lookup tool failed")
+            return "Order lookup failed due to an internal error."
 
     @function_tool
     async def lookup_refund_status(self, order_id: str) -> str:
         """Check the simulated refund status for an order."""
+        tool_name = "lookup_refund_status"
         try:
-            return get_refund_status(order_id).model_dump_json()
-        except (ValueError, LookupError):
+            result = get_refund_status(order_id).model_dump_json()
+            self._record_tool_success(
+                tool_name, "Refund status lookup succeeded"
+            )
+            return result
+        except (ValueError, LookupError) as exc:
+            self._record_tool_error(tool_name, exc)
             return "Refund lookup failed. Check the order identifier and try again."
+        except Exception as exc:
+            self._record_tool_error(tool_name, exc)
+            logger.exception("Refund status tool failed")
+            return "Refund lookup failed due to an internal error."
 
     @function_tool
     async def open_support_ticket(
@@ -198,13 +254,22 @@ Respond naturally and concisely, as a real customer would speak on a phone call.
         issue: str,
     ) -> str:
         """Create a simulated support ticket for a known customer."""
+        tool_name = "open_support_ticket"
         try:
-            return create_support_ticket(
-                customer_id,
-                issue,
+            result = create_support_ticket(
+                customer_id, issue
             ).model_dump_json()
-        except (ValueError, LookupError):
+            self._record_tool_success(
+                tool_name, "Support ticket created"
+            )
+            return result
+        except (ValueError, LookupError) as exc:
+            self._record_tool_error(tool_name, exc)
             return "Support ticket creation failed. Check the customer identifier and issue."
+        except Exception as exc:
+            self._record_tool_error(tool_name, exc)
+            logger.exception("Support ticket tool failed")
+            return "Support ticket creation failed due to an internal error."
 
     @function_tool
     async def request_supervisor(
@@ -212,13 +277,33 @@ Respond naturally and concisely, as a real customer would speak on a phone call.
         reason: str,
     ) -> str:
         """Record a supervisor escalation for this training session."""
+        tool_name = "request_supervisor"
+
         try:
-            return record_escalation(
-                reason,
-                self.tool_state,
-            ).model_dump_json()
-        except ValueError:
+            result = record_escalation(
+                reason, self.tool_state
+            )
+
+            self.handle_behavior_event(
+                ConversationEvent.ESCALATION_TRIGGERED
+            )
+
+            result_json = result.model_dump_json()
+            self._record_tool_success(
+                tool_name,
+                "Supervisor escalation recorded",
+            )
+            return result_json
+        except ValueError as exc:
+            self._record_tool_error(tool_name, exc)
             return "Supervisor escalation failed. Provide a valid reason."
+        except Exception as exc:
+            self._record_tool_error(tool_name, exc)
+            logger.exception("Supervisor escalation tool failed")
+            return "Supervisor escalation failed due to an internal error."
+
+
+
 
 
 def create_training_session() -> AgentSession:
@@ -351,3 +436,35 @@ def register_transcript_events(
                 for behavior_event in classification.events
             ],
         )
+
+
+def register_tool_execution_events(session: AgentSession) -> None:
+    """Log LiveKit tool execution lifecycle events without exposing payloads."""
+
+    from livekit.agents.voice.events import ToolCallEnded, ToolCallStarted
+
+    tool_names: dict[str, str] = {}
+
+    @session.on("tool_execution_updated")
+    def on_tool_execution_updated(event) -> None:
+        update = event.update
+
+        if isinstance(update, ToolCallStarted):
+            function_call = update.function_call
+            tool_names[function_call.call_id] = function_call.name
+
+            logger.info(
+                "agent_tool_execution_started",
+                tool_name=function_call.name,
+                call_id=function_call.call_id,
+            )
+
+        elif isinstance(update, ToolCallEnded):
+            tool_name = tool_names.pop(update.call_id, "unknown")
+
+            logger.info(
+                "agent_tool_execution_ended",
+                tool_name=tool_name,
+                call_id=update.call_id,
+                execution_status=update.status,
+            )
