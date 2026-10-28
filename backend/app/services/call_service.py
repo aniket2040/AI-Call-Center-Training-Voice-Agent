@@ -1,9 +1,9 @@
 
-from datetime import datetime, timezone
 from uuid import uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.app.agents.state.events import SessionEventType
 from backend.app.lifecycle.service import SessionLifecycleService
 from backend.app.models.enums import TrainingSessionStatus
 from backend.app.repositories.scenario import ScenarioRepository
@@ -93,6 +93,17 @@ class CallService:
             status=TrainingSessionStatus.CREATED.value,
         )
 
+        # Record session creation before committing the session.
+        await self.events.create(
+            session_id=training_session.id,
+            event_type=SessionEventType.SESSION_CREATED,
+            payload={
+                "trainee_id": trainee_id,
+                "scenario_id": scenario_id,
+                "room_name": room_name,
+            },
+        )
+
         await self.db.commit()
         await self.db.refresh(training_session)
 
@@ -124,7 +135,18 @@ class CallService:
                     TrainingSessionStatus.FAILED,
                     reason=f"Agent dispatch failed: {exc}",
                 )
+
+                await self.events.create(
+                    session_id=training_session.id,
+                    event_type=SessionEventType.SESSION_FAILED,
+                    payload={
+                        "stage": "agent_dispatch",
+                        "reason": str(exc),
+                    },
+                )
+
                 await self.db.commit()
+
             except Exception:
                 await self.db.rollback()
                 raise
@@ -136,8 +158,7 @@ class CallService:
         try:
             await self.events.create(
                 session_id=training_session.id,
-                event_type="agent_dispatched",
-                event_timestamp=datetime.now(timezone.utc),
+                event_type=SessionEventType.AGENT_DISPATCHED,
                 payload={
                     "dispatch_id": dispatch_id,
                     "agent_name": "call-center-training-agent",

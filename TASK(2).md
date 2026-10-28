@@ -1073,11 +1073,11 @@ SESSION_FAILED
 
 ## Requirements
 
-- [ ] Store event timestamp.
-- [ ] Store event type.
-- [ ] Store structured payload.
-- [ ] Make events append-only.
-- [ ] Use events for debugging.
+- [X] Store event timestamp.
+- [X] Store event type.
+- [X] Store structured payload.
+- [X] Make events append-only.
+- [X] Use events for debugging.
 
 ---
 

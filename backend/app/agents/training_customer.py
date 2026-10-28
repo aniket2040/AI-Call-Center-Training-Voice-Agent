@@ -2,6 +2,8 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 from backend.app.core.logging import get_logger
+from backend.app.agents.session_event_recorder import SessionEventRecorder
+from backend.app.agents.state.events import SessionEventType
 from livekit.agents import (
     Agent,
     AgentSession,
@@ -334,13 +336,74 @@ def create_training_session() -> AgentSession:
     )
 
 
-
 def register_session_events(
     session: AgentSession,
+    event_recorder: SessionEventRecorder | None = None,
 ) -> None:
     """Register session state, error, and response latency events."""
 
     pending_turn_started_at: float | None = None
+
+    @session.on("conversation_item_added")
+    def on_conversation_item_added(event) -> None:
+        item = event.item
+
+        if getattr(item, "type", None) != "message":
+            return
+
+        role = getattr(item, "role", None)
+        role = str(getattr(role, "value", role)).lower()
+
+        if role != "assistant":
+            return
+
+        transcript = item.raw_text_content
+        if not transcript or not transcript.strip():
+            return
+
+        logger.info("agent_speech", transcript=transcript)
+
+        if event_recorder is not None:
+            event_recorder.record(
+                SessionEventType.AGENT_SPEECH,
+                {"transcript": transcript},
+            )
+    @session.on("overlapping_speech")
+    def on_overlapping_speech(event) -> None:
+        if not event.is_interruption:
+            return
+
+        if event_recorder is not None:
+            event_recorder.record(
+                SessionEventType.INTERRUPTION,
+                {
+                    "source": "livekit",
+                    "detected_at": event.detected_at,
+                    "agent_ended": event.agent_ended,
+                },
+            )
+
+    @session.on("close")
+    def on_session_close(event) -> None:
+        reason = getattr(event, "reason", None)
+        reason = str(getattr(reason, "value", reason))
+
+        error = getattr(event, "error", None)
+
+        logger.info(
+            "session_closed",
+            reason=reason,
+            error_type=type(error).__name__ if error is not None else None,
+        )
+
+        if event_recorder is not None:
+            event_recorder.record(
+                SessionEventType.CALL_ENDED,
+                {
+                    "reason": reason,
+                    "error_type": type(error).__name__ if error is not None else None,
+                },
+            )
 
     @session.on("user_input_transcribed")
     def on_user_transcribed(event) -> None:
@@ -364,6 +427,19 @@ def register_session_events(
             old_state=str(event.old_state),
             new_state=str(event.new_state),
         )
+        if event_recorder is not None:
+            event_recorder.record(
+                SessionEventType.STATE_CHANGED,
+                {
+                    "component": "agent",
+                    "old_state": str(
+                        getattr(event.old_state, "value", event.old_state)
+                    ),
+                    "new_state": str(
+                        getattr(event.new_state, "value", event.new_state)
+                    ),
+                },
+            )
 
         if "speaking" in new_state and pending_turn_started_at is not None:
             latency_ms = (
@@ -406,8 +482,11 @@ def register_session_events(
 def register_transcript_events(
     session: AgentSession,
     customer: TrainingCustomer,
+    event_recorder: SessionEventRecorder | None = None,
 ) -> None:
     """Register transcript handlers for the active training customer."""
+
+    conversation_started = False
 
     @session.on("user_input_transcribed")
     def on_user_input_transcribed(event) -> None:
@@ -417,6 +496,23 @@ def register_transcript_events(
         transcript = event.transcript.strip()
         if not transcript:
             return
+
+        nonlocal conversation_started
+
+        if event_recorder is not None and not conversation_started:
+            event_recorder.record(
+                SessionEventType.CONVERSATION_STARTED,
+                {"trigger": "first_user_transcript"},
+            )
+            conversation_started = True
+
+        if event_recorder is not None:
+            event_recorder.record(
+                SessionEventType.USER_SPEECH,
+                {
+                    "transcript": transcript,
+                },
+            )
 
         classification = classify_transcript(
             transcript,
@@ -438,7 +534,10 @@ def register_transcript_events(
         )
 
 
-def register_tool_execution_events(session: AgentSession) -> None:
+def register_tool_execution_events(
+    session: AgentSession,
+    event_recorder: SessionEventRecorder | None = None,
+) -> None:
     """Log LiveKit tool execution lifecycle events without exposing payloads."""
 
     from livekit.agents.voice.events import ToolCallEnded, ToolCallStarted
@@ -452,6 +551,14 @@ def register_tool_execution_events(session: AgentSession) -> None:
         if isinstance(update, ToolCallStarted):
             function_call = update.function_call
             tool_names[function_call.call_id] = function_call.name
+            if event_recorder is not None:
+                event_recorder.record(
+                    SessionEventType.TOOL_CALLED,
+                    {
+                        "tool_name": function_call.name,
+                        "call_id": function_call.call_id,
+                    },
+                )
 
             logger.info(
                 "agent_tool_execution_started",
@@ -461,6 +568,15 @@ def register_tool_execution_events(session: AgentSession) -> None:
 
         elif isinstance(update, ToolCallEnded):
             tool_name = tool_names.pop(update.call_id, "unknown")
+            if event_recorder is not None:
+                event_recorder.record(
+                    SessionEventType.TOOL_COMPLETED,
+                    {
+                        "tool_name": tool_name,
+                        "call_id": update.call_id,
+                        "execution_status": str(update.status),
+                    },
+                )
 
             logger.info(
                 "agent_tool_execution_ended",

@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.lifecycle.transitions import validate_transition
 from backend.app.models import TrainingSession
 from backend.app.models.enums import TrainingSessionStatus
+from backend.app.agents.state.events import SessionEventType
 from backend.app.repositories.session_event import SessionEventRepository
 
 
@@ -79,7 +80,7 @@ class SessionLifecycleService:
 
         await self.events.create(
             session_id=session_id,
-            event_type="lifecycle_transition",
+            event_type=SessionEventType.STATE_CHANGED,
             event_timestamp=now,
             payload={
                 "from_status": current.value,

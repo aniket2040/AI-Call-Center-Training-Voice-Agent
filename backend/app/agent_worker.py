@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 import json
-
+from backend.app.agents.session_event_recorder import SessionEventRecorder
+from backend.app.agents.state.events import SessionEventType
 from dotenv import load_dotenv
 from livekit import agents
 from livekit.agents import AgentServer, JobContext
@@ -46,6 +47,7 @@ async def training_agent(ctx: JobContext) -> None:
     room_name = ctx.room.name
 
     logger.info("agent_job_started", room_name=room_name)
+    event_recorder: SessionEventRecorder | None = None
 
     try:
         raw_metadata = ctx.job.metadata
@@ -72,14 +74,52 @@ async def training_agent(ctx: JobContext) -> None:
         session = create_training_session()
         customer = TrainingCustomer(scenario)
 
-        register_session_events(session)
-        register_transcript_events(session, customer)
-        register_tool_execution_events(session)
+        event_recorder = SessionEventRecorder(training_session.id)
+
+        async def drain_session_events() -> None:
+            await event_recorder.drain()
+
+        ctx.add_shutdown_callback(drain_session_events)
+
+        event_recorder.record(
+            SessionEventType.CALL_INITIATED,
+            {
+                "room_name": room_name,
+                "scenario_id": training_session.scenario_id,
+            },
+        )
+
+        register_session_events(session, event_recorder)
+        register_transcript_events(session, customer, event_recorder)
+        register_tool_execution_events(session, event_recorder)
+
+        recorded_participant_sids: set[str] = set()
+
+        def record_participant_joined(participant) -> None:
+            if participant.sid in recorded_participant_sids:
+                return
+
+            recorded_participant_sids.add(participant.sid)
+
+            event_recorder.record(
+                SessionEventType.PARTICIPANT_JOINED,
+                {
+                    "identity": participant.identity,
+                    "sid": participant.sid,
+                    "room_name": room_name,
+                },
+            )
+
+        @ctx.room.on("participant_connected")
+        def on_participant_connected(participant) -> None:
+            record_participant_joined(participant)
 
         await session.start(
             room=ctx.room,
             agent=customer,
         )
+        for participant in ctx.room.remote_participants.values():
+            record_participant_joined(participant)
 
         logger.info(
             "agent_session_started",
@@ -98,11 +138,39 @@ async def training_agent(ctx: JobContext) -> None:
         )
         raise
 
-    except Exception:
+
+
+    except Exception as exc:
+
         logger.exception(
+
             "agent_job_failed",
+
             room_name=room_name,
+
         )
+
+        if event_recorder is not None:
+            event_recorder.record(
+
+                SessionEventType.SESSION_FAILED,
+
+                {
+
+                    "stage": "agent_runtime",
+
+                    "error_type": type(exc).__name__,
+
+                    "reason": str(exc),
+
+                    "room_name": room_name,
+
+                },
+
+            )
+
+            await event_recorder.drain()
+
         raise
 
     finally:

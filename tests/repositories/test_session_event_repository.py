@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-
+from backend.app.agents.state.events import SessionEventType
 import pytest
 
 from backend.app.db.session import AsyncSessionFactory
@@ -50,7 +50,7 @@ async def test_create_and_get_session_event():
 
         event = await event_repository.create(
             session_id=training_session.id,
-            event_type="conversation_started",
+            event_type=SessionEventType.CONVERSATION_STARTED,
             event_timestamp=datetime.now(timezone.utc),
             payload={
                 "source": "test",
@@ -62,7 +62,7 @@ async def test_create_and_get_session_event():
 
         assert event.id is not None
         assert event.session_id == training_session.id
-        assert event.event_type == "conversation_started"
+        assert event.event_type == "CONVERSATION_STARTED"
         assert event.payload["source"] == "test"
 
         fetched = await event_repository.get_by_id(event.id)
